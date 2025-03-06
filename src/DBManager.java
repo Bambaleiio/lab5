@@ -18,31 +18,43 @@ public class DBManager {
     }
 
     public String createDatabase() {
-        try {
-            CallableStatement cs = connection.prepareCall("CALL sp_createDatabase()");
-            cs.execute();
-            return "База данных успешно создана.";
+        try (Connection adminConn = DriverManager.getConnection(
+                "jdbc:postgresql://localhost:5432/postgres",
+                "postgres",
+                "Bambaleo"
+        );
+             Statement st = adminConn.createStatement()
+        ) {
+            adminConn.setAutoCommit(true);
+
+            st.executeUpdate("CREATE DATABASE platformdb");
+
+            return "База данных 'platformdb' успешно создана.";
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                return "Ошибка: " + ex.getMessage();
-            }
             return "Ошибка при создании БД: " + e.getMessage();
         }
     }
 
     public String deleteDatabase() {
-        try {
-            CallableStatement cs = connection.prepareCall("CALL sp_deleteDatabase()");
-            cs.execute();
-            return "База данных успешно удалена.";
+        try (Connection adminConn = DriverManager.getConnection(
+                "jdbc:postgresql://localhost:5432/postgres",
+                "postgres",
+                "Bambaleo"
+        );
+             Statement st = adminConn.createStatement()
+        ) {
+            adminConn.setAutoCommit(true);
+
+            st.execute(
+                    "SELECT pg_terminate_backend(pid)\n" +
+                            "FROM pg_stat_activity\n" +
+                            "WHERE datname = 'platformdb';"
+            );
+
+            st.executeUpdate("DROP DATABASE platformdb");
+
+            return "База данных 'platformdb' успешно удалена.";
         } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                return "Ошибка: " + ex.getMessage();
-            }
             return "Ошибка при удалении БД: " + e.getMessage();
         }
     }

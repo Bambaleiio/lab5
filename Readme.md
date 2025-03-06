@@ -1,33 +1,5 @@
 # Хранимые процедуры
 ``` sql
--- Создание таблицы
-CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    role TEXT NOT NULL,
-    contact TEXT
-);
-
--- Создание базы данных
-CREATE OR REPLACE PROCEDURE sp_createDatabase()
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    EXECUTE 'CREATE DATABASE platformdb';
-EXCEPTION WHEN duplicate_database THEN
-    RAISE NOTICE 'База данных platformdb уже существует.';
-END;
-$$;
-
--- Удаление базы данных
-CREATE OR REPLACE PROCEDURE sp_deleteDatabase()
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    EXECUTE 'DROP DATABASE IF EXISTS platformdb';
-END;
-$$;
-
 -- Очистка таблицы
 CREATE OR REPLACE PROCEDURE sp_clearTable()
 LANGUAGE plpgsql
